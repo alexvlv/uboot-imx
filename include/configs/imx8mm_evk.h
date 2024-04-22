@@ -147,7 +147,10 @@
 	"mmcpart=1\0" \
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 	"mmcautodetect=yes\0" \
-	"mmcargs=setenv bootargs ${jh_clk} ${mcore_clk} console=${console} root=${mmcroot}\0 " \
+	"base=console=ttymxc1,115200 loglevel=8 earlyprintk\0" \
+	"extra=drm.debug=0\0" \
+	"autoload=no\0" \
+	"mmcargs=setenv bootargs ${jh_clk} ${mcore_clk} ${base} ${extra} root=${mmcroot}\0 " \
 	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${bsp_script};\0" \
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
@@ -164,17 +167,20 @@
 				"echo WARN: Cannot load the DT; " \
 			"fi; " \
 		"fi;\0" \
-	"netargs=setenv bootargs ${jh_clk} ${mcore_clk} console=${console} " \
+	"nfspath=/work/srv/nfs\0" \
+	"nfsdir=imx8mmevk-avl-core\0" \
+	"netargs=setenv nfsroot ${nfspath}/${nfsdir}; setenv bootargs ${jh_clk} ${mcore_clk} ${base} ${extra} " \
 		"root=/dev/nfs " \
-		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
+		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp systemd.hostname=${nfsdir}-nfsroot\0" \
 	"netboot=echo Booting from net ...; " \
-		"run netargs;  " \
+		"setenv autoload yes;" \
 		"if test ${ip_dyn} = yes; then " \
 			"setenv get_cmd dhcp; " \
 		"else " \
 			"setenv get_cmd tftp; " \
 		"fi; " \
 		"${get_cmd} ${loadaddr} ${image}; " \
+		"run netargs;  " \
 		"if test ${boot_fit} = yes || test ${boot_fit} = try; then " \
 			"bootm ${loadaddr}; " \
 		"else " \
@@ -184,6 +190,8 @@
 				"echo WARN: Cannot load the DT; " \
 			"fi; " \
 		"fi;\0" \
+	"nfs=setenv autoload no; dhcp && run loadfdt && run loadimage && run netargs && booti ${loadaddr} - ${fdt_addr_r}\0" \
+	"nfsd=setenv autoload yes; dhcp ${fdt_addr_r} imx8mm/${fdtfile} && run loadfdt && run loadimage && run netargs && booti ${loadaddr} - ${fdt_addr_r}\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
 		   "if run loadbootscript; then " \
