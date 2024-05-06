@@ -446,6 +446,15 @@ config VIDEO_LCD_RAYDIUM_RM67191
 	Say Y here if you want to enable support for Raydium RM68200
 	1080x1920 DSI video mode panel.
 
+config VIDEO_LCD_JDI_LT070ME05000
+	bool "LT070ME05000 DSI LCD panel support"
+	depends on DM_VIDEO
+	select VIDEO_MIPI_DSI
+	default n
+	help
+	Say Y here if you want to enable support for JDI LT070ME05000
+	1080x1920 DSI video mode panel.
+
 config VIDEO_LCD_USMP_RM67162
 	bool "RM67162 DSI LCD panel support"
 	depends on DM_VIDEO

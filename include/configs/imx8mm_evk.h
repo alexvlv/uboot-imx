@@ -193,7 +193,7 @@
 	"nfs=setenv autoload no; dhcp && run loadfdt && run loadimage && run netargs && booti ${loadaddr} - ${fdt_addr_r}\0" \
 	"nfsd=setenv autoload yes; dhcp ${fdt_addr_r} imx8mm/${fdtfile} && run loadimage && run netargs && booti ${loadaddr} - ${fdt_addr_r}\0" \
 	"ping=setenv autoload no; dhcp && ping ${serverip}\0" \
-	"video_link=0\0" \
+	"video_link=2\0" \
 	"bsp_bootcmd=echo Running BSP bootcmd ...; " \
 		"mmc dev ${mmcdev}; if mmc rescan; then " \
 		   "if run loadbootscript; then " \

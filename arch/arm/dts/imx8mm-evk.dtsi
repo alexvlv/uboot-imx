@@ -106,6 +106,42 @@
 			};
 		};
 	};
+
+	dsi_iovcc: dsi-iovcc-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "DSI-1v8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+		gpio = <&gpio_i2c_1 0 GPIO_ACTIVE_HIGH>;
+	};
+
+	dsi_vddp: dsi-vddp-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "DSI-3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
+	lt070me05000_panel {
+		compatible = "jdi,lt070me05000";
+		pinctrl-names = "default";
+
+		reset-gpios = <&gpio_i2c_0 5 GPIO_ACTIVE_LOW>;
+		enable-gpios = <&gpio_i2c_1 2 GPIO_ACTIVE_HIGH>; // LED power
+		dcdc-en-gpios  = <&gpio_i2c_1 1 GPIO_ACTIVE_HIGH>; // EN_3V3
+		iovcc-supply = <&dsi_iovcc>;
+		vddp-supply = <&dsi_vddp>;
+
+		status = "okay";
+
+		port {
+			lt070me05000_from_dsim: endpoint {
+				remote-endpoint = <&dsim_to_lt070me05000>;
+			};
+		};
+	};
 };
 
 &A53_0 {
@@ -340,7 +376,42 @@
 			self-powered;
 		};
 	};
-};
+
+	i2cmux: i2cmux@70 {
+		compatible = "nxp,pca9545";
+		reg = <0x70>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		pinctrl-names = "default";
+
+		gpio_i2c_bus: i2c2@3 {
+			reg = <3>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clock-frequency = <100000>;
+
+			gpio_i2c_0: gpio@20 {
+				compatible = "ti,tca6408";
+				reg = <0x20>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				gpio-line-names =
+					"ADV7535_PD", "XS15", "ADV7535_INT#", "DSI_MUX",
+					"XS14", "LCD_RST#", "TOUCH_RST#_", "TOUCH_INT#_";
+			};
+
+			gpio_i2c_1: gpio@21 {
+				compatible = "ti,tca6408";
+				reg = <0x21>;
+				gpio-controller;
+				#gpio-cells = <2>;
+				gpio-line-names =
+					"EN_1V8_LCD", "EN_3V3_LCD", "EN_AVDD_3V3", "LCD_RST#_",
+					"XS13", "DSI_MUX", "TOUCH_RST#", "TOUCH_INT#";
+			};
+		}; // i2c2@3
+	}; // i2cmux@70
+}; // &i2c2
 
 &i2c3 {
 	clock-frequency = <100000>;
@@ -438,6 +509,12 @@
 	port@2 {
 		dsim_to_rm67191: endpoint {
 			remote-endpoint = <&rm67191_from_dsim>;
+		};
+	};
+
+	port@3 {
+		dsim_to_lt070me05000: endpoint {
+			remote-endpoint = <&lt070me05000_from_dsim>;
 		};
 	};
 };
