@@ -69,6 +69,7 @@ int lt070me_gpio_init(struct udevice *dev)
 		ret = lt070me_gpio_acquire(dev,&priv->gpios[i],gpio_names[i],GPIOD_IS_OUT);
 	}
 	lt070me_reset_activate(dev);
+	printf("!!! %s done, ret:%d !!!!\n", __func__, ret);
 	return ret;
 }
 //-------------------------------------------------------------------------

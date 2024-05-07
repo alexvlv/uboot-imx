@@ -5,7 +5,6 @@
  */
 
 #include "jdi-lt070me05000.h"
-#include "jdi-lt070me05000-gpio.h"
 
 #include <common.h>
 #include <dm.h>
@@ -56,8 +55,6 @@ static int lt070me_panel_get_display_timing(struct udevice *dev,
 	return 0;
 }
 
-int lt070me_gpio_init(struct udevice *dev);
-
 static int lt070me_panel_probe(struct udevice *dev)
 {
 	struct lt070me_panel_priv *priv = dev_get_priv(dev);
@@ -67,7 +64,10 @@ static int lt070me_panel_probe(struct udevice *dev)
 	printf("!!!!!!!!!!!!! %s !!!!!!!!!!!!!!!!\n", __func__);
 
 	ret = lt070me_gpio_init(dev);
+	if(ret == 0) ret = lt070me_power_init(dev);
+
 	dev_info(dev, "%s done, ret:%d!\n", __func__, ret);
+	printf("!!! %s done, ret:%d !!!!\n", __func__, ret);
 	return ret;
 }
 
