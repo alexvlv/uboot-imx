@@ -33,6 +33,7 @@ static const struct display_timing default_timing = {
 
 static int lt070me_panel_enable_backlight(struct udevice *dev)
 {
+	dev_info(dev, "%s\n", __func__);
 	return 0;
 }
 
@@ -51,23 +52,19 @@ static int lt070me_panel_get_display_timing(struct udevice *dev,
 		device->mode_flags = MIPI_DSI_MODE_VIDEO_HSE 
 		| MIPI_DSI_MODE_VIDEO_SYNC_PULSE | MIPI_DSI_MODE_VIDEO;
 	}
-
+	dev_info(dev, "%s\n", __func__);
 	return 0;
 }
 
 static int lt070me_panel_probe(struct udevice *dev)
 {
-	struct lt070me_panel_priv *priv = dev_get_priv(dev);
+	//struct lt070me_panel_priv *priv = dev_get_priv(dev);
 	int ret;
-
-	dev_info(dev, "%s !!!!!!!!!!!!!!!!\n", __func__);
-	printf("!!!!!!!!!!!!! %s !!!!!!!!!!!!!!!!\n", __func__);
 
 	ret = lt070me_gpio_init(dev);
 	if(ret == 0) ret = lt070me_power_init(dev);
 
-	dev_info(dev, "%s done, ret:%d!\n", __func__, ret);
-	printf("!!! %s done, ret:%d !!!!\n", __func__, ret);
+	dev_dbg(dev, "%s done, ret:%d!\n", __func__, ret);
 	return ret;
 }
 
@@ -96,3 +93,7 @@ U_BOOT_DRIVER(lt070me_panel) = {
 	.plat_auto = sizeof(struct mipi_dsi_panel_plat),
 	.priv_auto = sizeof(struct lt070me_panel_priv),
 };
+
+/*
+CONFIG_LOGLEVEL=7
+*/

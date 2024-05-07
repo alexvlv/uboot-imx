@@ -24,9 +24,12 @@ int lt070me_power_init(struct udevice *dev)
 		ret = device_get_supply_regulator(dev, regulator_names[i], &priv->regulators[i]);
 		if (ret && ret != -ENOENT) {
 			dev_err(dev, "Warning: cannot get power supply [%s]\n",regulator_names[i]);
+		} else {
+			dev_info(dev, "Acquired power supply %s for [%s]\n",
+				priv->regulators[i]->name, regulator_names[i]);
 		}
 	}
-	printf("!!! %s done, ret:%d !!!!\n", __func__, ret);
+	dev_dbg(dev, "%s done, ret:%d\n", __func__, ret);
 	return ret;
 }
 //-------------------------------------------------------------------------
@@ -43,6 +46,7 @@ int lt070me_power_on(struct udevice *dev)
 			dev_err(dev, "Warning: cannot power ON [%s]\n",regulator_names[i]);
 		}
 	}
+	dev_dbg(dev, "%s done, ret:%d\n", __func__, ret);
 	return ret;
 }
 //-------------------------------------------------------------------------

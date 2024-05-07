@@ -26,7 +26,8 @@ static int lt070me_gpio_acquire(struct udevice *dev, struct gpio_desc **pgp , co
 	struct gpio_desc *gp;
 
 	if(*pgp != NULL) {
-		dev_notice(dev,"GPIO pin %s is already acquired: %d\n",name, desc_to_gpio(*pgp));
+		gp = *pgp;
+		dev_warn(dev,"GPIO pin %s is already acquired: %s-%d\n",name, gp->dev->name, gp->offset);
 		return ret;
 	}
 	
@@ -36,7 +37,7 @@ static int lt070me_gpio_acquire(struct udevice *dev, struct gpio_desc **pgp , co
 		if (ret != -EPROBE_DEFER)
 			dev_err(dev, "Failed to acquire %s gpio pin(%d)\n", name, ret);
 	} else if(gp) {
-		dev_notice(dev,"GPIO pin %s acquired: %d\n",name, desc_to_gpio(gp));
+		dev_info(dev,"GPIO pin %s acquired: %s-%d\n",name, gp->dev->name, gp->offset);
 	} else {
 		dev_warn(dev,"No %s gpio pin provided\n", name);
 	}
@@ -69,7 +70,7 @@ int lt070me_gpio_init(struct udevice *dev)
 		ret = lt070me_gpio_acquire(dev,&priv->gpios[i],gpio_names[i],GPIOD_IS_OUT);
 	}
 	lt070me_reset_activate(dev);
-	printf("!!! %s done, ret:%d !!!!\n", __func__, ret);
+	dev_vdbg(dev, "GPIO init done, ret:%d\n", ret);
 	return ret;
 }
 //-------------------------------------------------------------------------
