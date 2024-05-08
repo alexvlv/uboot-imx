@@ -6,18 +6,21 @@
 
 #include <dm.h>
 #include <dm/device_compat.h>
+#include <linux/delay.h>
 
 //-------------------------------------------------------------------------
 enum lt070me_gpio_idx { 	
 	GPIO_DCDC_EN =0, 
 	GPIO_RESET, 
-	GPIO_LED_EN 
+	GPIO_LED_EN,
+	GPIO_TEST
 };
 //-------------------------------------------------------------------------
 static const char * const gpio_names[] = {
 	"dcdc-en",
 	"reset",
 	"enable",
+	"test",
 };
 //-------------------------------------------------------------------------
 static int lt070me_gpio_acquire(struct udevice *dev, struct gpio_desc **pgp , const char *name, unsigned long flags)
@@ -69,7 +72,7 @@ int lt070me_gpio_init(struct udevice *dev)
 	for (i = 0; i < ARRAY_SIZE(gpio_names) && ret==0; i++) {
 		ret = lt070me_gpio_acquire(dev,&priv->gpios[i],gpio_names[i],GPIOD_IS_OUT);
 	}
-	lt070me_reset_activate(dev);
+	dev_dbg(dev, "GPIO Reset state:%d\n", dm_gpio_get_value(priv->gpios[GPIO_RESET]));
 	dev_vdbg(dev, "GPIO init done, ret:%d\n", ret);
 	return ret;
 }

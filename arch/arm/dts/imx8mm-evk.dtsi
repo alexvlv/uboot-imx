@@ -128,9 +128,10 @@
 		compatible = "jdi,lt070me05000";
 		pinctrl-names = "default";
 
-		reset-gpios = <&gpio_i2c_0 5 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio_i2c_0 5 GPIO_ACTIVE_HIGH>;
 		enable-gpios = <&gpio_i2c_1 2 GPIO_ACTIVE_HIGH>; // LED power
 		dcdc-en-gpios  = <&gpio_i2c_1 1 GPIO_ACTIVE_HIGH>; // EN_3V3
+		test-gpios  = <&gpio_i2c_0 4 GPIO_ACTIVE_HIGH>; // XS14
 		iovcc-supply = <&dsi_iovcc>;
 		vddp-supply = <&dsi_vddp>;
 
