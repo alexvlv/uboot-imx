@@ -31,10 +31,29 @@ static const struct display_timing default_timing = {
 		 DISPLAY_FLAGS_PIXDATA_NEGEDGE,
 };
 
+static int lt070me_panel_enable(struct udevice *dev)
+{
+	int ret;
+	ret = lt070me_power_on(dev);
+
+	dev_info(dev, "%s done, ret:%d\n", __func__, ret);
+	return ret;
+}
+
 static int lt070me_panel_enable_backlight(struct udevice *dev)
 {
-	dev_info(dev, "%s\n", __func__);
-	return 0;
+	struct mipi_dsi_panel_plat *plat = dev_get_plat(dev);
+	struct mipi_dsi_device *device = plat->device;
+	int ret;
+
+	ret = mipi_dsi_attach(device);
+	if (ret < 0) {
+		dev_err(dev, "mipi_dsi_attach failed!\n");
+		return ret;
+	}
+	ret = lt070me_panel_enable(dev);
+	dev_info(dev, "%s done, ret:%d\n", __func__, ret);
+	return ret;
 }
 
 static int lt070me_panel_get_display_timing(struct udevice *dev,
